@@ -18,8 +18,8 @@ namespace LabOOP_6
         }
 
 		int ctrl = 0; //вспомогательная переменная для проверки нажатия на Control
-		static int index = 0;
-		int indexin = 0;
+		static int index = 0; //кол-во нарисованных объектов
+		static int indexin = 0;
 		int figureSelect = 1; //выбранная фигура
 		static int razmer = 50; //размер хранилища фигур
 		Storage sklad = new Storage(razmer); //хранилище с заданным ранее размером
@@ -29,7 +29,133 @@ namespace LabOOP_6
 			public int x, y; //координаты объекта
 			public Color color = Color.Black; //цвет фигуры по умолчанию
 			public Color fillColor = Color.Red; //цвет обводки по умолчанию
+
+			public Figures() //конструктор по умолчанию
+            {
+
+            }
+
+			public virtual void addGroup(ref Figures object1)
+            {
+
+            }
+
+			public virtual void deleteGroup(ref Storage storage, int c)
+            {
+
+            }
+
+			public virtual void paintFigure(Pen pen, Panel panelPaint) 
+			{ 
+
+			}
+			public virtual void moveX(int x, Panel panelPaint) 
+			{
+
+			}
+			public virtual void moveY(int y, Panel panelPaint)
+			{
+
+			}
+			public virtual void changeSize(int size) 
+			{ 
+
+			}
+			public virtual bool checkFigure(int x, int y) 
+			{ 
+				return false;
+			}
+			public virtual void setColor(Color color)
+			{
+
+			}
+
 		}
+
+		class Group: Figures //класс группы
+        {
+			public int count; 
+			public int maxCount = 5; //максимальное кол-во объектов в группе
+			public Figures[] group; //массив группы
+
+			public Group() //выделяем ячейки для хранилища группы и зануляем их
+			{   
+				count = 0;
+				group = new Figures[maxCount];
+				for (int i = 0; i < maxCount; ++i)
+				{
+					group[i] = null;
+				}
+			}
+
+			public override void addGroup(ref Figures object1) //метод добавления объектов в группу
+			{
+				if (count >= maxCount)
+				{
+					return;
+				}
+				group[count] = object1;
+				++count;
+			}
+
+			public override void deleteGroup(ref Storage storage, int c) //метод разгруппировки объектов
+			{
+				storage.deleteObject(c);
+				for (int i = 0; i < count; ++i)
+				{
+					storage.addObject(index, ref group[i], 50, ref indexin);
+				}
+			}
+
+			public override void paintFigure(Pen pen, Panel panelPaint)
+			{ 
+				for (int i = 0; i < count; ++i)
+				{
+					group[i].paintFigure(pen, panelPaint);
+				}
+			}
+
+			public override void moveX(int x, Panel panelPaint)
+			{
+				for (int i = 0; i < count; ++i)
+				{
+					group[i].moveX(x, panelPaint);
+				}
+			}
+			public override void moveY(int y, Panel panelPaint)
+			{
+				for (int i = 0; i < count; ++i)
+				{
+					group[i].moveY(y, panelPaint);
+				}
+			}
+			public override void changeSize(int size)
+			{
+				for (int i = 0; i < count; ++i)
+				{
+					group[i].changeSize(size);
+				}
+			}
+			public override bool checkFigure(int x, int y)
+			{
+				for (int i = 0; i < count; ++i)
+				{
+					if (group[i].checkFigure(x, y))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+			public override void setColor(Color color)
+			{
+				for (int i = 0; i < count; ++i)
+				{
+					group[i].setColor(color);
+				}
+			}
+		}
+
 		class Ellipse : Figures //класс круга (класс-наследник Figures)
 		{
 			public int rad = 25; // радиус круга
@@ -37,6 +163,42 @@ namespace LabOOP_6
 			{
 				this.x = x - rad;
 				this.y = y - rad;
+			}
+
+			public override void paintFigure(Pen pen, Panel panelPaint)
+			{
+				SolidBrush figurefillcolor = new SolidBrush(fillColor);
+				panelPaint.CreateGraphics().DrawEllipse(pen, x, y, rad * 2, rad * 2);
+				panelPaint.CreateGraphics().FillEllipse(figurefillcolor, x, y, rad * 2, rad * 2);
+			}
+
+			public override void moveX(int x, Panel panelPaint)
+			{
+				int c = this.x + x;
+				int g = panelPaint.ClientSize.Width - (rad * 2);
+				check(c, x, g, g - 2, ref this.x);
+			}
+
+			public override void moveY(int y, Panel panel_drawing)
+			{
+				int c = this.y + y;
+				int g = panel_drawing.ClientSize.Height - (rad * 2);
+				check(c, y, g, g - 2, ref this.y);
+			}
+
+			public override void changeSize(int size)
+			{
+				rad += size;
+			}
+
+			public override bool checkFigure(int x, int y)
+			{
+				return ((x - this.x - rad) * (x - this.x - rad) + (y - this.y - rad) *	(y - this.y - rad)) < (rad * rad);
+			}
+
+			public override void setColor(Color color)
+			{
+				fillColor = color;
 			}
 
 			~Ellipse() //деструктор
@@ -55,7 +217,44 @@ namespace LabOOP_6
 				this.y = y;
 			}
 
-            ~Line() //деструктор
+			public override void paintFigure(Pen pen, Panel panelPaint)
+			{
+				SolidBrush figurefillcolor = new SolidBrush(fillColor);
+				panelPaint.CreateGraphics().DrawRectangle(pen, x, y, length, width);
+				panelPaint.CreateGraphics().FillRectangle(figurefillcolor, x, y, length, width);
+			}
+
+			public override void moveX(int x, Panel panelPaint)
+			{
+				int l = this.x + x;
+				int g = panelPaint.ClientSize.Width - length;
+				check(l, x, g, --g, ref this.x);
+			}
+
+			public override void moveY(int y, Panel panel_drawing)
+			{
+				int l = this.y + y;
+				int gran = panel_drawing.ClientSize.Height - width;
+				check(l, y, gran, --gran, ref this.y);
+			}
+
+			public override void changeSize(int size)
+			{
+				length += size;
+			}
+
+			public override bool checkFigure(int x, int y)
+			{
+				return (this.x <= x && x <= (this.x + length) && (this.y - 2) <= y &&
+									y <= (this.y + width));
+			}
+
+			public override void setColor(Color color)
+			{
+				fillColor = color;
+			}
+
+			~Line() //деструктор
             {
 
             }
@@ -71,6 +270,43 @@ namespace LabOOP_6
 				this.y = y - size / 2;
 				this.width = size;
 				this.height = size;
+			}
+
+			public override void paintFigure(Pen pen, Panel panelPaint)
+			{
+				SolidBrush figurefillcolor = new SolidBrush(fillColor);
+				panelPaint.CreateGraphics().DrawRectangle(pen, x, y, size, size);
+				panelPaint.CreateGraphics().FillRectangle(figurefillcolor,
+					x, y, size, size);
+			}
+
+			public override void moveX(int x, Panel panel_drawing)
+			{
+				int s = this.x + x;
+				int gran = panel_drawing.ClientSize.Width - size;
+				check(s, x, gran, --gran, ref this.x);
+			}
+
+			public override void moveY(int y, Panel panel_drawing)
+			{
+				int s = this.y + y;
+				int gran = panel_drawing.ClientSize.Height - size;
+				check(s, y, gran, --gran, ref this.y);
+			}
+
+			public override void changeSize(int size)
+			{
+				this.size += size;
+			}
+
+			public override bool checkFigure(int x, int y)
+			{
+				return (this.x <= x && x <= (this.x + size) && this.y <= y && y <= (this.y + size));
+			}
+
+			public override void setColor(Color color)
+			{
+				fillColor = color;
 			}
 
 			~Rectangle() //деструктор
@@ -105,7 +341,8 @@ namespace LabOOP_6
 			public void deleteObject(int ind) //функция удаления объекта из хранилища
 			{
 				objects[ind] = null;
-				index--;
+				if (index > 0)
+					index--;
 			}
 
 			public bool checkEmpty(int index) //проверка хранилища на пустую ячейку
@@ -132,6 +369,7 @@ namespace LabOOP_6
 				}
 				return countFilled;
 			}
+
 			~Storage() //деструктор
 			{
 
@@ -212,36 +450,11 @@ namespace LabOOP_6
 
 		private void paintFigure(Color color, int size, ref Storage storage, int index) //функция отрисовки фигуры на полотне
 		{
-			Pen pen = new Pen(color, size); //инициализация "карандашей" и "кистей" для рисования
-			SolidBrush figureFillColor;
-			if (!storage.checkEmpty(index)) //если ячейка в хранилище не пуста
+			if (!storage.checkEmpty(index))
 			{
+				Pen pen = new Pen(color, size);
 				storage.objects[index].color = color;
-				figureFillColor = new SolidBrush(storage.objects[index].fillColor);
-				if (storage.objects[index] as Ellipse != null) //если объект - круг
-				{
-					Ellipse ellipse = storage.objects[index] as Ellipse;
-					panelPaint.CreateGraphics().DrawEllipse(pen, ellipse.x, ellipse.y, ellipse.rad * 2, ellipse.rad * 2);
-					panelPaint.CreateGraphics().FillEllipse(figureFillColor, ellipse.x, ellipse.y, ellipse.rad * 2, ellipse.rad * 2);
-				}
-				else
-				{
-					if (storage.objects[index] as Line != null) //если объект - отрезок
-					{
-						Line line = storage.objects[index] as Line;
-						panelPaint.CreateGraphics().DrawRectangle(pen, line.x, line.y, line.length, line.width);
-						panelPaint.CreateGraphics().FillRectangle(figureFillColor, line.x, line.y, line.length, line.width);
-					}
-					else
-					{
-						if (storage.objects[index] as Rectangle != null) //если объект - квадрат
-						{
-							Rectangle rectangle = storage.objects[index] as Rectangle;
-							panelPaint.CreateGraphics().DrawRectangle(pen, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-							panelPaint.CreateGraphics().FillRectangle(figureFillColor, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-						}
-					}
-				}
+				storage.objects[index].paintFigure(pen, panelPaint);
 			}
 		}
 
@@ -281,43 +494,14 @@ namespace LabOOP_6
 
 		private int checkFigure(ref Storage storage, int size, int x, int y) //проверка нахождения на заданных координатах объекта
 		{
-			if (storage.fill(size) != 0) //если размер занятых ячеек хранилища не равен нулю
+			if (storage.fill(size) != 0)
 			{
 				for (int i = 0; i < size; ++i)
 				{
-					if (!storage.checkEmpty(i)) //если ячейка хранилища не пуста
-					{
-						if (storage.objects[i] as Ellipse != null) //если объект в хранилище - круг
-						{
-							Ellipse ellipse = storage.objects[i] as Ellipse;
-							if (((x - ellipse.x - ellipse.rad) * (x - ellipse.x - ellipse.rad) + (y - ellipse.y - ellipse.rad) * (y - ellipse.y - ellipse.rad)) < (ellipse.rad * ellipse.rad))
-							{
-								return i; //возвращаем индекс объекта
-							}
-						}
-						else
-						{
-							if (storage.objects[i] as Line != null) //если объект в хранилище - отрезок
-							{
-								Line line = storage.objects[i] as Line;
-								if (line.x <= x && x <= (line.x + line.length) && (line.y - 2) <= y && y <= (line.y + line.width))
-								{
-									return i; //возвращаем индекс объекта
-								}
-							}
-							else
-							{
-								if (storage.objects[i] as Rectangle != null) //если объект в хранилище - квадрат
-								{
-									Rectangle rectangle = storage.objects[i] as Rectangle;
-									if (rectangle.x <= x && x <= (rectangle.x + rectangle.size) && rectangle.y <= y && y <= (rectangle.y + rectangle.size))
-									{
-										return i; //возвращаем индекс объекта
-									}
-								}
-							}
-						}
-
+					if (!storage.checkEmpty(i))
+					{  
+						if (storage.objects[i].checkFigure(x, y))
+							return i;
 					}
 				}
 			}
@@ -328,37 +512,11 @@ namespace LabOOP_6
 		{
 			for (int i = 0; i < 50; ++i)
 			{
-				if (!storage.checkEmpty(i)) //если ячейка не пуста
+				if (!storage.checkEmpty(i))
 				{
-					if (storage.objects[i].color == Color.Black) //если объект выделен
+					if (storage.objects[i].color == Color.Black)
 					{
-						if (storage.objects[i] as Ellipse != null) //если объект - круг
-						{
-							Ellipse ellipse = storage.objects[i] as Ellipse;
-							int c = ellipse.y + y;
-							int g = panelPaint.ClientSize.Height - ellipse.rad * 2;
-							check(c, y, g, g - 2, ref storage.objects[i], 2); //проверка на выход за границы панели
-						}
-						else
-						{
-							if (storage.objects[i] as Line != null) //если объект - линия
-							{
-								Line line = storage.objects[i] as Line;
-								int l = line.y + y;
-								int g = panelPaint.ClientSize.Height - line.width;
-								check(l, y, g, --g, ref storage.objects[i], 2); //проверка на выход за границы панели
-							}
-							else
-							{
-								if (storage.objects[i] as Rectangle != null) //если объект - квадрат
-								{
-									Rectangle square = storage.objects[i] as Rectangle;
-									int s = square.y + y;
-									int g = panelPaint.ClientSize.Height - square.size;
-									check(s, y, g, --g, ref storage.objects[i], 2); //проверка на выход за границы панели
-								}
-							}
-						}
+						storage.objects[i].moveY(y, panelPaint);
 					}
 				}
 			}
@@ -370,62 +528,31 @@ namespace LabOOP_6
 			{
 				if (!storage.checkEmpty(i))
 				{
-					if (storage.objects[i].color == Color.Black) //если объект выделен
+					if (storage.objects[i].color == Color.Black)
 					{
-						if (storage.objects[i] as Ellipse != null) //если объект - круг
-						{
-							Ellipse ellipse = storage.objects[i] as Ellipse;
-							int c = ellipse.x + x;
-							int g = panelPaint.ClientSize.Width - (ellipse.rad * 2);
-							check(c, x, g, g - 2, ref storage.objects[i], 1); //проверка на выход за границы панели
-						}
-						else
-						{
-							if (storage.objects[i] as Line != null) //если объект - отрезок
-							{
-								Line line = storage.objects[i] as Line;
-								int l = line.x + x;
-								int g = panelPaint.ClientSize.Width - line.length;
-								check(l, x, g, --g, ref storage.objects[i], 1); //проверка на выход за границы панели
-							}
-							else
-							{
-								if (storage.objects[i] as Rectangle != null)
-								{
-									Rectangle rectangle = storage.objects[i] as Rectangle;
-									int s = rectangle.x + x;
-									int g = panelPaint.ClientSize.Width - rectangle.size;
-									check(s, x, g, --g, ref storage.objects[i], 1); //проверка на выход за границы панели
-								}
-							}
-						}
+						storage.objects[i].moveX(x, panelPaint);
 					}
 				}
 			}
 		}
 
-		private void check(int f, int y, int g, int g1, ref Figures figures, int gr)
+		static private void check(int f, int chislo, int gran, int gran1, ref int x) //проверка выхода за пределы полотна
 		{
-			ref int b = ref figures.x;
-			if (gr == 2)
+			if (f > 0 && f < gran)
 			{
-				b = ref figures.y;
-			}
-			if (f > 0 && f < g)
-			{
-				b += y;
+				x += chislo;
 			}
 			else
 			{
 				if (f <= 0)
 				{
-					b = 1;
+					x = 1;
 				}
 				else
 				{
-					if (f >= g1)
-					{ 
-						b = g1;
+					if (f >= gran1)
+					{
+						x = gran1;
 					}
 				}
 			}
@@ -435,34 +562,11 @@ namespace LabOOP_6
 		{
 			for (int i = 0; i < 50; ++i)
 			{
-				if (!storage.checkEmpty(i)) //если ячейка хранилища не пуста
+				if (!storage.checkEmpty(i)) //если ячейка не пуста
 				{
 					if (storage.objects[i].color == Color.Black) //если объект выделен
 					{
-						if (storage.objects[i] as Ellipse != null) //если объект - круг
-						{
-							Ellipse ellipse = storage.objects[i] as Ellipse ;
-							ellipse.rad += size;
-						}
-						else
-						{
-							if (storage.objects[i] as Line != null) //если объект - отрезок
-							{
-								Line line = storage.objects[i] as Line;
-								line.length += size;
-								line.width += size / 5;
-							}
-							else
-							{
-								if (storage.objects[i] as Rectangle != null) //если объект - квадрат
-								{
-									Rectangle rectangle = storage.objects[i] as Rectangle;
-									rectangle.size += size;
-									rectangle.width = rectangle.size;
-									rectangle.height = rectangle.size;
-								}
-							}
-						}
+						storage.objects[i].changeSize(size);
 					}
 				}
 			}
@@ -508,20 +612,50 @@ namespace LabOOP_6
 			{
 				return;
 			}
-			button1.BackColor = colorDialog1.Color; //изменяем цвет кнопки в зависимости от выбора цвета
+			buttonColor.BackColor = colorDialog1.Color; //изменяем цвет кнопки в зависимости от выбора цвета
 			for (int i = 0; i < 50; ++i)
 			{
 				if (!sklad.checkEmpty(i)) //если ячейка не пуста
 				{
 					if (sklad.objects[i].color == Color.Black) //если объект выделен
 					{
-						sklad.objects[i].fillColor = colorDialog1.Color; //меняем цвет выделенному объекту
+						sklad.objects[i].setColor(colorDialog1.Color); //меняем цвет выделенному объекту
 						paintFigure(sklad.objects[i].color, 4, ref sklad, i);
 					}
 				}
 			}
 		}
 
+        private void buttonGroup_Click(object sender, EventArgs e) //обработчик события нажатия на кнопку "Группировка"
+        {
+			Figures group = new Group();
+			for (int i = 0; i < 50; ++i)
+			{
+				if (!sklad.checkEmpty(i)) //если ячейка не пуста
+				{
+					if (sklad.objects[i].color == Color.Black) //если элемент выделен
+					{
+						group.addGroup(ref sklad.objects[i]); //добавляем объект в группу
+						sklad.deleteObject(i); //удаляем объект из основного склада
+					}
+				}
+			}
+			sklad.addObject(index, ref group, 50, ref indexin); //добавляем в основной склад объекты группы
+		}
 
-	}
+        private void buttonUnGroup_Click(object sender, EventArgs e)
+        {
+			for (int i = 0; i < 50; ++i)
+			{
+				if (!sklad.checkEmpty(i)) //если ячейка не пуста
+				{
+					if (sklad.objects[i].color == Color.Black) //если объект выделен
+					{
+						sklad.objects[i].deleteGroup(ref sklad, i); //удаляем группу
+						return;
+					}
+				}
+			}
+		}
+    }
 }

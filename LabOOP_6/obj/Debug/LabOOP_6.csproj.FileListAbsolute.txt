@@ -8,3 +8,13 @@ C:\Users\krank\source\repos\LabOOP_6\LabOOP_6\obj\Debug\LabOOP_6.csproj.Generate
 C:\Users\krank\source\repos\LabOOP_6\LabOOP_6\obj\Debug\LabOOP_6.csproj.CoreCompileInputs.cache
 C:\Users\krank\source\repos\LabOOP_6\LabOOP_6\obj\Debug\LabOOP_6.exe
 C:\Users\krank\source\repos\LabOOP_6\LabOOP_6\obj\Debug\LabOOP_6.pdb
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\bin\Debug\LabOOP_6.exe.config
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\bin\Debug\LabOOP_6.exe
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\bin\Debug\LabOOP_6.pdb
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\obj\Debug\LabOOP_6.csprojAssemblyReference.cache
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\obj\Debug\LabOOP_6.Form1.resources
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\obj\Debug\LabOOP_6.Properties.Resources.resources
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\obj\Debug\LabOOP_6.csproj.GenerateResource.cache
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\obj\Debug\LabOOP_6.csproj.CoreCompileInputs.cache
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\obj\Debug\LabOOP_6.exe
+C:\Users\krank\source\repos\LabOOP_6 — копия\LabOOP_6\obj\Debug\LabOOP_6.pdb

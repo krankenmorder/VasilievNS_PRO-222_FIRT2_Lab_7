@@ -35,7 +35,9 @@ namespace LabOOP_6
             this.radioButtonRectangle = new System.Windows.Forms.RadioButton();
             this.radioButtonEllipse = new System.Windows.Forms.RadioButton();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonColor = new System.Windows.Forms.Button();
+            this.buttonGroup = new System.Windows.Forms.Button();
+            this.buttonUnGroup = new System.Windows.Forms.Button();
             this.groupBoxChoose.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,22 +98,44 @@ namespace LabOOP_6
             this.radioButtonEllipse.UseVisualStyleBackColor = true;
             this.radioButtonEllipse.CheckedChanged += new System.EventHandler(this.radioButtonEllipse_CheckedChanged);
             // 
-            // button1
+            // buttonColor
             // 
-            this.button1.Location = new System.Drawing.Point(618, 123);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(252, 37);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "Вызвать окно цветов";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.buttonSelectColor_Click);
+            this.buttonColor.Location = new System.Drawing.Point(618, 123);
+            this.buttonColor.Name = "buttonColor";
+            this.buttonColor.Size = new System.Drawing.Size(252, 37);
+            this.buttonColor.TabIndex = 5;
+            this.buttonColor.Text = "Вызвать окно цветов";
+            this.buttonColor.UseVisualStyleBackColor = true;
+            this.buttonColor.Click += new System.EventHandler(this.buttonSelectColor_Click);
+            // 
+            // buttonGroup
+            // 
+            this.buttonGroup.Location = new System.Drawing.Point(618, 166);
+            this.buttonGroup.Name = "buttonGroup";
+            this.buttonGroup.Size = new System.Drawing.Size(252, 37);
+            this.buttonGroup.TabIndex = 6;
+            this.buttonGroup.Text = "Группировка";
+            this.buttonGroup.UseVisualStyleBackColor = true;
+            this.buttonGroup.Click += new System.EventHandler(this.buttonGroup_Click);
+            // 
+            // buttonUnGroup
+            // 
+            this.buttonUnGroup.Location = new System.Drawing.Point(618, 209);
+            this.buttonUnGroup.Name = "buttonUnGroup";
+            this.buttonUnGroup.Size = new System.Drawing.Size(252, 37);
+            this.buttonUnGroup.TabIndex = 7;
+            this.buttonUnGroup.Text = "Разгруппировка";
+            this.buttonUnGroup.UseVisualStyleBackColor = true;
+            this.buttonUnGroup.Click += new System.EventHandler(this.buttonUnGroup_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(882, 634);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.buttonUnGroup);
+            this.Controls.Add(this.buttonGroup);
+            this.Controls.Add(this.buttonColor);
             this.Controls.Add(this.groupBoxChoose);
             this.Controls.Add(this.panelPaint);
             this.KeyPreview = true;
@@ -132,7 +156,9 @@ namespace LabOOP_6
         private System.Windows.Forms.RadioButton radioButtonRectangle;
         private System.Windows.Forms.RadioButton radioButtonEllipse;
         private System.Windows.Forms.ColorDialog colorDialog1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonColor;
+        private System.Windows.Forms.Button buttonGroup;
+        private System.Windows.Forms.Button buttonUnGroup;
     }
 }
 
