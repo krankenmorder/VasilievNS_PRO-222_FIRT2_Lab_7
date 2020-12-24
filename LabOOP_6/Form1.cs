@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace LabOOP_6
 		static int razmer = 50; //размер хранилища фигур
 		Storage sklad = new Storage(razmer); //хранилище с заданным ранее размером
 
-		class Figures //класс-предок всех фигур
+		public class Figures //класс-предок всех фигур
 		{
 			public int x, y; //координаты объекта
 			public Color color = Color.Black; //цвет фигуры по умолчанию
@@ -35,16 +36,26 @@ namespace LabOOP_6
 
             }
 
+			public virtual string save() 
+			{
+				return ""; 
+			}
+			public virtual void load(string x, string y, string c, string fillcolor) 
+			{
+
+			}
+			public virtual void load(ref StreamReader sr, Figures figure, CreateFigure createFigure) 
+			{ 
+
+			}
 			public virtual void addGroup(ref Figures object1)
             {
 
             }
-
 			public virtual void deleteGroup(ref Storage storage, int c)
             {
 
             }
-
 			public virtual void paintFigure(Pen pen, Panel panelPaint) 
 			{ 
 
@@ -69,7 +80,10 @@ namespace LabOOP_6
 			{
 
 			}
+			public virtual void caseswitch(ref StreamReader sr, ref Figures figure, CreateFigure createFigure) 
+			{
 
+			}
 		}
 
 		class Group: Figures //класс группы
@@ -154,11 +168,35 @@ namespace LabOOP_6
 					group[i].setColor(color);
 				}
 			}
+
+			public override string save()
+			{
+				string str = "Group" + "\n" + count;
+				for (int i = 0; i < count; ++i)
+					str += "\n" + group[i].save();
+				return str;
+			}
+			public override void load(ref StreamReader sr, Figures figure, CreateFigure createFigure)
+			{
+				int chislo = Convert.ToInt32(sr.ReadLine());
+				for (int i = 0; i < chislo; ++i)
+				{
+					createFigure.caseswitch(ref sr, ref figure, createFigure);
+					addGroup(ref figure);
+				}
+			}
+
+
 		}
 
 		class Ellipse : Figures //класс круга (класс-наследник Figures)
 		{
 			public int rad = 25; // радиус круга
+
+			public Ellipse()
+            {
+
+            }
 			public Ellipse(int x, int y) //конструктор с параметрами
 			{
 				this.x = x - rad;
@@ -201,6 +239,18 @@ namespace LabOOP_6
 				fillColor = color;
 			}
 
+			public override string save()
+			{
+				return "Ellipse" + "\n" + x + "\n" + y + "\n" + rad + "\n" + fillColor.ToArgb().ToString();
+			}
+			public override void load(string x, string y, string rad, string fillColor)
+			{
+				this.x = Convert.ToInt32(x);
+				this.y = Convert.ToInt32(y);
+				this.rad = Convert.ToInt32(rad);
+				this.fillColor = Color.FromArgb(Convert.ToInt32(fillColor));
+			}
+
 			~Ellipse() //деструктор
 			{ 
 
@@ -211,6 +261,11 @@ namespace LabOOP_6
 		{
 			public int length = 50; //длина отрезка
 			public int width = 5; //ширина отрезка
+
+			public Line()
+            {
+
+            }
 			public Line(int x, int y) //конструктор с параметрами
 			{
 				this.x = x - length / 2;
@@ -234,8 +289,8 @@ namespace LabOOP_6
 			public override void moveY(int y, Panel panel_drawing)
 			{
 				int l = this.y + y;
-				int gran = panel_drawing.ClientSize.Height - width;
-				check(l, y, gran, --gran, ref this.y);
+				int g = panel_drawing.ClientSize.Height - width;
+				check(l, y, g, --g, ref this.y);
 			}
 
 			public override void changeSize(int size)
@@ -245,13 +300,24 @@ namespace LabOOP_6
 
 			public override bool checkFigure(int x, int y)
 			{
-				return (this.x <= x && x <= (this.x + length) && (this.y - 2) <= y &&
-									y <= (this.y + width));
+				return (this.x <= x && x <= (this.x + length) && (this.y - 2) <= y && y <= (this.y + width));
 			}
 
 			public override void setColor(Color color)
 			{
 				fillColor = color;
+			}
+
+			public override string save()
+			{
+				return "Line" + "\n" + x + "\n" + y + "\n" + length + "\n" + fillColor.ToArgb().ToString();
+			}
+			public override void load(string x, string y, string lenght, string fillColor)
+			{
+				this.x = Convert.ToInt32(x);
+				this.y = Convert.ToInt32(y);
+				this.length = Convert.ToInt32(lenght);
+				this.fillColor = Color.FromArgb(Convert.ToInt32(fillColor));
 			}
 
 			~Line() //деструктор
@@ -264,6 +330,11 @@ namespace LabOOP_6
 		{
 			public int width, height; //переменные ширины и высоты
 			public int size = 50; //размер
+
+			public Rectangle()
+            {
+
+            }
 			public Rectangle(int x, int y)
 			{
 				this.x = x - size / 2;
@@ -276,22 +347,21 @@ namespace LabOOP_6
 			{
 				SolidBrush figurefillcolor = new SolidBrush(fillColor);
 				panelPaint.CreateGraphics().DrawRectangle(pen, x, y, size, size);
-				panelPaint.CreateGraphics().FillRectangle(figurefillcolor,
-					x, y, size, size);
+				panelPaint.CreateGraphics().FillRectangle(figurefillcolor, x, y, size, size);
 			}
 
 			public override void moveX(int x, Panel panel_drawing)
 			{
 				int s = this.x + x;
-				int gran = panel_drawing.ClientSize.Width - size;
-				check(s, x, gran, --gran, ref this.x);
+				int g = panel_drawing.ClientSize.Width - size;
+				check(s, x, g, --g, ref this.x);
 			}
 
 			public override void moveY(int y, Panel panel_drawing)
 			{
 				int s = this.y + y;
-				int gran = panel_drawing.ClientSize.Height - size;
-				check(s, y, gran, --gran, ref this.y);
+				int g = panel_drawing.ClientSize.Height - size;
+				check(s, y, g, --g, ref this.y);
 			}
 
 			public override void changeSize(int size)
@@ -309,13 +379,25 @@ namespace LabOOP_6
 				fillColor = color;
 			}
 
+			public override string save()
+			{
+				return "Rectangle" + "\n" + x + "\n" + y + "\n" + size + "\n" + fillColor.ToArgb().ToString();
+			}
+			public override void load(string x, string y, string size, string fillColor)
+			{
+				this.x = Convert.ToInt32(x);
+				this.y = Convert.ToInt32(y);
+				this.size = Convert.ToInt32(size);
+				this.fillColor = Color.FromArgb(Convert.ToInt32(fillColor));
+			}
+
 			~Rectangle() //деструктор
             {
 
             }
 		}
 
-		class Storage //класс-хранилище
+		public class Storage //класс-хранилище
 		{
 			public Figures[] objects; //массив класса "фигуры"
 
@@ -375,6 +457,33 @@ namespace LabOOP_6
 
 			} 
 		};
+
+		public class CreateFigure : Figures
+		{
+			public override void caseswitch(ref StreamReader sr, ref Figures figure, CreateFigure createFigure)
+			{
+				string str = sr.ReadLine();
+				switch (str)
+				{
+					case "Ellipse":
+						figure = new Ellipse();
+						figure.load(sr.ReadLine(), sr.ReadLine(), sr.ReadLine(), sr.ReadLine());
+						break;
+					case "Line":
+						figure = new Line();
+						figure.load(sr.ReadLine(), sr.ReadLine(), sr.ReadLine(), sr.ReadLine());
+						break;
+					case "Rectangle":
+						figure = new Rectangle();
+						figure.load(sr.ReadLine(), sr.ReadLine(), sr.ReadLine(), sr.ReadLine());
+						break;
+					case "Group":
+						figure = new Group();
+						figure.load(ref sr, figure, createFigure);
+						break;
+				}
+			}
+		}
 
 		private void radioButtonEllipse_CheckedChanged(object sender, EventArgs e) //обработчик события проверки изменения значения RadioButton круга
 		{
@@ -655,6 +764,42 @@ namespace LabOOP_6
 						return;
 					}
 				}
+			}
+		}
+
+		string path = @"E:\path\1.txt"; //указываем путь до текстового документа
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+			using (StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.Default))
+			{
+				sw.WriteLine(sklad.fill(50));
+				for (int i = 0; i < 50; ++i)
+				{
+					if (!sklad.checkEmpty(i))
+					{
+						sw.WriteLine(sklad.objects[i].save());
+					}
+				}
+			}
+		}
+
+        private void buttonLoad_Click(object sender, EventArgs e)
+        {
+			StreamReader sr = new StreamReader(path, System.Text.Encoding.Default);
+			{
+				string str = sr.ReadLine();
+				int strend = Convert.ToInt32(str);
+				for (int i = 0; i < strend; ++i)
+				{
+					Figures figure = new Figures();
+					CreateFigure create = new CreateFigure();
+					create.caseswitch(ref sr, ref figure, create);
+					sklad.addObject(index, ref figure, 50, ref indexin);
+					++index;
+				}
+				paintAll(ref sklad);
+				sr.Close();
 			}
 		}
     }
